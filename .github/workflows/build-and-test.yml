@@ -1,0 +1,94 @@
+name: .NET
+
+# https://stackoverflow.com/questions/58871955/sonarcloud-code-coverage-remains-0-0-in-github-actions-build
+# todo:https://www.aaron-powell.com/posts/2020-01-10-deploying-azure-functions-with-github-actions/
+
+env:
+  OUTPUT_PATH: ${{ github.workspace }}/.output
+  TEST_OUTPUT_PATH: ${{ github.workspace }}/.testoutput
+  DOTNET_VERSION: 5.0.x
+  USE_SONARQUBE: 0
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Setup Dotnet ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup JDK 11 for SonarQube
+        if: env.USE_SONARQUBE == 1
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Clean
+        run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+
+      - name: Restore
+        run: dotnet restore #-s https://api.nuget.org/
+
+      # --- vvv SonarQube Stuff vvv---
+
+      - name: Cache SonarCloud packages
+        if: env.USE_SONARQUBE == 1
+        uses: actions/cache@v1
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarCloud scanner
+        if: env.USE_SONARQUBE == 1
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          dotnet tool install dotnet-sonarscanner -g
+
+      - name: Build and analyze
+        if: env.USE_SONARQUBE == 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: bash
+        run: |
+          dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithDotNetCore" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build --no-restore --configuration release
+          dotnet test --collect:"Code Coverage" --logger:"trx"
+          dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+      # --- ^^^ SonarQube Stuff ^^^ ---
+
+      - name: Build
+        if: env.USE_SONARQUBE == 0
+        run: dotnet build --no-restore --configuration release
+
+      - name: Test & collect Code Coverage
+        if: env.USE_SONARQUBE == 0
+        run: dotnet test --collect:"Code Coverage" --logger:"trx;LogFileName=${{ env.TEST_OUTPUT_PATH }}/TestResults.xml"
+
+      - name: Publish
+        run: dotnet publish --configuration Release --output ${{ env.OUTPUT_PATH }}
