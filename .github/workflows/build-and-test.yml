@@ -18,7 +18,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -39,7 +39,11 @@ jobs:
 
       - name: Clean
         run: dotnet clean --configuration Release && dotnet nuget locals all --clear
-
+      
+      - name: Install azure-functions-core-tools
+        shell: bash
+        run: npm i -g azure-functions-core-tools@3 --unsafe-perm true
+      
       - name: Restore
         run: dotnet restore #-s https://api.nuget.org/
 
