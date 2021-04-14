@@ -42,7 +42,7 @@ jobs:
       
       - name: Install azure-functions-core-tools
         shell: bash
-        run: npm i -g azure-functions-core-tools@3 --unsafe-perm true
+        run: sudo npm i -g azure-functions-core-tools@3 --unsafe-perm true
       
       - name: Restore
         run: dotnet restore #-s https://api.nuget.org/
