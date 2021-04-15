@@ -27,15 +27,23 @@ namespace GithubActions.AzureFunction
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
+            // get from query string
             var name = req.Query["name"].FirstOrDefault();
 
-            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                // get from request body
+                var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
+                name = data?.name;
+            }
 
-            return !string.IsNullOrWhiteSpace(name)
-                ? new OkObjectResult($"{_config.Greeting}, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            }
+
+            return new OkObjectResult($"{_config.Greeting}, {name}");
         }
     }
 }
