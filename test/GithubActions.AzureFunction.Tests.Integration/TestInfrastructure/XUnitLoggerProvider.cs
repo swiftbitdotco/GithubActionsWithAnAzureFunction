@@ -20,6 +20,7 @@ namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
 
         public void Dispose()
         {
+            // here to conform to ILoggerProvider interface
         }
     }
 }

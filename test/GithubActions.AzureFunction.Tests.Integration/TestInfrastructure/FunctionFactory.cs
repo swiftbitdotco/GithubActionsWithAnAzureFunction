@@ -12,7 +12,7 @@ namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
         void StartHostForLocalDevelopment();
     }
 
-    public class FunctionFactory : IFunctionFactory
+    public sealed class FunctionFactory : IFunctionFactory
     {
         private Process _host;
 
