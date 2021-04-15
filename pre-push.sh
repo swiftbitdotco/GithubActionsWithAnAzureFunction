@@ -38,7 +38,7 @@ echo -e "${YELLOW}#####################${NC}"
 echo -e "${YELLOW}  Running ALL tests  ${NC}"
 echo -e "${YELLOW}#####################${NC}"
 echo ""
-dotnet test --logger="trx;LogFileName=TestResults.trx" --results-directory="./TestResults" --collect="XPlat Code Coverage"
+dotnet test
 rc=$?
 # $? is a shell variable which stores the return code from what we just ran
 if [[ $rc != 0 ]] ; then

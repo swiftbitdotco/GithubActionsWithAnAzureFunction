@@ -45,7 +45,7 @@ jobs:
         run: dotnet build --no-restore --configuration release
 
       - name: Test & collect Code Coverage
-        run: dotnet test --blame --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=opencover.xml
+        run: dotnet test --blame --no-restore --logger="trx;LogFileName=TestResults.trx" --results-directory="TestResults" --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Exclude="*Tests" /p:CoverletOutput=TestResults/Coverage/
       
       - name: SonarCloud Scan
         if: env.USE_SONARQUBE == 1
