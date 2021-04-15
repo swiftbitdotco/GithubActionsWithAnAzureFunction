@@ -1,4 +1,4 @@
-name: .NET
+name: net5.0
 
 # https://stackoverflow.com/questions/58871955/sonarcloud-code-coverage-remains-0-0-in-github-actions-build
 # todo:https://www.aaron-powell.com/posts/2020-01-10-deploying-azure-functions-with-github-actions/
@@ -11,9 +11,9 @@ env:
 
 on:
   push:
-    branches: [main]
+    branches: [net5.0]
   pull_request:
-    branches: [main]
+    branches: [net5.0]
 
 jobs:
   build:
