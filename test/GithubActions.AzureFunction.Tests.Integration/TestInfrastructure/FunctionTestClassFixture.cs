@@ -4,7 +4,11 @@ using System.Net.Http;
 using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Xunit;
 using Xunit.Abstractions;
+using Xunit.Extensions.AssemblyFixture;
+
+[assembly: TestFramework(AssemblyFixtureFramework.TypeName, AssemblyFixtureFramework.AssemblyName)]
 
 namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
 {
@@ -30,10 +34,11 @@ namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
             // TODO: load & print app-specific configs to the console in order to see their values in the build server output
             // e.g. LoadSection<MyServiceSettings>(configRoot);
 
-            _server = new FunctionFactory();
             if (TestSettings.IsRunningOnLocalHost)
             {
+                _server = new FunctionFactory();
                 _server.StartHostForLocalDevelopment();
+                //_server = FunctionFactorySingleton.Instance;
             }
         }
 

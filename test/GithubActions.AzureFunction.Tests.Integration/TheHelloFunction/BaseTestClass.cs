@@ -1,11 +1,10 @@
 ﻿using GithubActions.AzureFunction.Tests.Integration.TestInfrastructure;
-using Xunit;
 using Xunit.Abstractions;
+using Xunit.Extensions.AssemblyFixture;
 
 namespace GithubActions.AzureFunction.Tests.Integration.TheHelloFunction
 {
-    [Collection(FunctionCollectionFixtureNames.All)]
-    public abstract class BaseTestClass
+    public abstract class BaseTestClass : IAssemblyFixture<FunctionTestFixture>
     {
         protected readonly ICustomHttpClient Client;
 
