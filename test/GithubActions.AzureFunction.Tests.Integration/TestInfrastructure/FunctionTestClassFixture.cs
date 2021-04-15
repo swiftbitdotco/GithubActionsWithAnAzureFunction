@@ -42,17 +42,6 @@ namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
             }
         }
 
-        /// <summary>
-        /// ITestOutputHelper is set in the constructor of the Test class
-        /// </summary>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        public FunctionTestFixture SetOutput(ITestOutputHelper output)
-        {
-            Output = output;
-            return this;
-        }
-
         private static T LoadSection<T>(IConfiguration configuration) where T : class, new()
         {
             var concreteSection = new T();
@@ -65,8 +54,10 @@ namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
 
         private TestSettings TestSettings { get; }
 
-        public ICustomHttpClient CreateClient()
+        public ICustomHttpClient CreateClient(ITestOutputHelper output)
         {
+            Output = output;
+
             TestSettings.BaseUrl.Should().NotBeNullOrWhiteSpace($"{nameof(TestSettings.BaseUrl)} should not be null or whitespace");
             //TestSettings.ApiKeyHeader.Should().NotBeNullOrWhiteSpace($"{nameof(TestSettings.ApiKeyHeader)} should not be null or whitespace");
             //TestSettings.ApiKeyValue.Should().NotBeNullOrWhiteSpace($"{nameof(TestSettings.ApiKeyValue)} should not be null or whitespace");

@@ -42,7 +42,7 @@ namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
 
             _host = Process.Start(hostProcess);
 
-            Thread.Sleep(5000);
+            Thread.Sleep(10000);
         }
 
         private static string GetWorkingDirectory()

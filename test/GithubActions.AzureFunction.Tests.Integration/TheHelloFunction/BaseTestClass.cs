@@ -10,7 +10,7 @@ namespace GithubActions.AzureFunction.Tests.Integration.TheHelloFunction
 
         protected BaseTestClass(FunctionTestFixture fixture, ITestOutputHelper testOutputHelper)
         {
-            Client = fixture.SetOutput(testOutputHelper).CreateClient();
+            Client = fixture.CreateClient(testOutputHelper);
         }
     }
 }
