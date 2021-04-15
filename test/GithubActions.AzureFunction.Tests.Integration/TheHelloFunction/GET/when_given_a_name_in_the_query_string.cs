@@ -13,17 +13,17 @@ namespace GithubActions.AzureFunction.Tests.Integration.TheHelloFunction.GET
         {
         }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData(null)]
-        public async Task should_return_http_400_ok(string name)
+        [Fact]
+        public async Task should_return_http_200_ok()
         {
+            // arrange
+            var name = "John";
+
             // act
             var httpResponse = await Client.GetAsync($"HelloFunction?name={name}");
 
             // assert
-            httpResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         }
     }
 }
