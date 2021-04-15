@@ -5,8 +5,7 @@ name: netcoreapp3.1
 
 env:
   OUTPUT_PATH: ${{ github.workspace }}/.output
-  #TEST_OUTPUT_PATH: ${{ github.workspace }}/.testoutput
-  TEST_OUTPUT_PATH: ./TestResults
+  TEST_OUTPUT_PATH: ${{ github.workspace }}/.testoutput
   DOTNET_VERSION: 3.1.x
   USE_SONARQUBE: 1
 
