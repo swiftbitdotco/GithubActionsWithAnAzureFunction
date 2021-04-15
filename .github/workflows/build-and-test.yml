@@ -1,4 +1,4 @@
-name: .NET
+name: netcoreapp3.1
 
 # https://stackoverflow.com/questions/58871955/sonarcloud-code-coverage-remains-0-0-in-github-actions-build
 # todo:https://www.aaron-powell.com/posts/2020-01-10-deploying-azure-functions-with-github-actions/
@@ -6,14 +6,14 @@ name: .NET
 env:
   OUTPUT_PATH: ${{ github.workspace }}/.output
   TEST_OUTPUT_PATH: ${{ github.workspace }}/.testoutput
-  DOTNET_VERSION: 5.0.x
+  DOTNET_VERSION: 3.1.x
   USE_SONARQUBE: 0
 
 on:
   push:
-    branches: [main]
+    branches: [netcoreapp3.1]
   pull_request:
-    branches: [main]
+    branches: [netcoreapp3.1]
 
 jobs:
   build:

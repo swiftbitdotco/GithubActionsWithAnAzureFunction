@@ -1,27 +1,16 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
+﻿using GithubActions.AzureFunction;
+using GithubActions.AzureFunction.Middleware;
+using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+
+[assembly: FunctionsStartup(typeof(Startup))]
 
 namespace GithubActions.AzureFunction
 {
-    public class Program
+    public class Startup : FunctionsStartup
     {
-        private static Task Main(string[] args)
+        public override void Configure(IFunctionsHostBuilder builder)
         {
-            var host = new HostBuilder()
-                           .ConfigureAppConfiguration(configurationBuilder =>
-                {
-                    configurationBuilder.AddCommandLine(args);
-                })
-                .ConfigureFunctionsWorkerDefaults()
-                .ConfigureServices(services =>
-                {
-                    services.AddHttpClient();
-                })
-                .Build();
-
-            return host.RunAsync();
+            builder.ConfigureSettings();
         }
     }
 }
