@@ -1,5 +1,4 @@
-﻿using System;
-using GithubActions.AzureFunction.Domain;
+﻿using GithubActions.AzureFunction.Domain;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,9 +25,6 @@ namespace GithubActions.AzureFunction.Middleware
             {
                 configuration.Bind(settings);
             });
-            var serviceProvider = builder.Services.BuildServiceProvider();
-            var appConfiguration = serviceProvider.GetService<IOptions<T>>().Value;
-            Console.WriteLine();
             builder.Services.AddSingleton(ctx => ctx.GetService<IOptions<T>>().Value);
         }
     }
