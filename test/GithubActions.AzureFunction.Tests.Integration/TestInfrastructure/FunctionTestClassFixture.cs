@@ -12,7 +12,7 @@ using Xunit.Extensions.AssemblyFixture;
 
 namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
 {
-    public class FunctionTestFixture : IDisposable
+    public sealed class FunctionTestFixture : IDisposable
     {
         public ITestOutputHelper Output { get; private set; }
         private readonly IFunctionFactory _server;
