@@ -4,19 +4,21 @@ using System.Net.Http;
 using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Xunit;
 using Xunit.Abstractions;
+using Xunit.Extensions.AssemblyFixture;
+
+[assembly: TestFramework(AssemblyFixtureFramework.TypeName, AssemblyFixtureFramework.AssemblyName)]
 
 namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
 {
     public class FunctionTestFixture : IDisposable
     {
-        private readonly ITestOutputHelper _testOutputHelper;
+        public ITestOutputHelper Output { get; private set; }
         private readonly IFunctionFactory _server;
 
-        public FunctionTestFixture(ITestOutputHelper testOutputHelper)
+        public FunctionTestFixture()
         {
-            _testOutputHelper = testOutputHelper;
-
             var basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             var configRoot = new ConfigurationBuilder()
@@ -32,11 +34,23 @@ namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
             // TODO: load & print app-specific configs to the console in order to see their values in the build server output
             // e.g. LoadSection<MyServiceSettings>(configRoot);
 
-            _server = new FunctionFactory();
             if (TestSettings.IsRunningOnLocalHost)
             {
+                _server = new FunctionFactory();
                 _server.StartHostForLocalDevelopment();
+                //_server = FunctionFactorySingleton.Instance;
             }
+        }
+
+        /// <summary>
+        /// ITestOutputHelper is set in the constructor of the Test class
+        /// </summary>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public FunctionTestFixture SetOutput(ITestOutputHelper output)
+        {
+            Output = output;
+            return this;
         }
 
         private static T LoadSection<T>(IConfiguration configuration) where T : class, new()
@@ -57,14 +71,16 @@ namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
             //TestSettings.ApiKeyHeader.Should().NotBeNullOrWhiteSpace($"{nameof(TestSettings.ApiKeyHeader)} should not be null or whitespace");
             //TestSettings.ApiKeyValue.Should().NotBeNullOrWhiteSpace($"{nameof(TestSettings.ApiKeyValue)} should not be null or whitespace");
 
+            Output.Should().NotBeNull($"The '{nameof(FunctionTestFixture)}.{nameof(Output)}' property was not set in the test constructor");
+
             var client = new HttpClient
             {
                 BaseAddress = new Uri(TestSettings.BaseUrl),
             };
-            //            client.DefaultRequestHeaders.Add(TestSettings.ApiKeyHeader, TestSettings.ApiKeyValue);
+            //client.DefaultRequestHeaders.Add(TestSettings.ApiKeyHeader, TestSettings.ApiKeyValue);
 
             CheckUri(client.BaseAddress.AbsoluteUri);
-            return new CustomHttpClient(client, _testOutputHelper);
+            return new CustomHttpClient(client, Output);
         }
 
         private void CheckUri(string absoluteUri)
@@ -80,6 +96,7 @@ namespace GithubActions.AzureFunction.Tests.Integration.TestInfrastructure
         public void Dispose()
         {
             _server?.Dispose();
+            Output = null;
         }
     }
 }
