@@ -11,9 +11,9 @@ env:
 
 on:
   push:
-    branches: [netcoreapp3.1]
+    branches: [main]
   pull_request:
-    branches: [netcoreapp3.1]
+    branches: [main]
 
 jobs:
   build:
