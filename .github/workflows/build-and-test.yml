@@ -39,11 +39,11 @@ jobs:
 
       - name: Clean
         run: dotnet clean --configuration Release && dotnet nuget locals all --clear
-      
+
       - name: Install azure-functions-core-tools
         shell: bash
         run: sudo npm i -g azure-functions-core-tools@3 --unsafe-perm true
-      
+
       - name: Restore
         run: dotnet restore #-s https://api.nuget.org/
 
@@ -79,10 +79,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: bash
         run: |
-          dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithAnAzureFunction" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithAnAzureFunction" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" -d:sonar.cs.cobertura.reportsPaths="GithubActions.AzureFunction.Tests.Integration\TestResults\*\coverage.cobertura.xml" -d:sonar.cs.vstest.reportsPaths="GithubActions.AzureFunction.Tests.Integration\TestResults\*.trx"
           dotnet build --no-restore --configuration release
-          #dotnet test --collect:"Code Coverage" --logger:"trx"
-          dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[xunit*]\*" /p:CoverletOutput="${{ env.TEST_OUTPUT_PATH }}/TestResults/"
+          dotnet test --logger="trx;LogFileName=TestResults.trx" --results-directory="./TestResults" --collect="XPlat Code Coverage"
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       # --- ^^^ SonarQube Stuff ^^^ ---
@@ -93,7 +92,7 @@ jobs:
 
       - name: Test & collect Code Coverage
         if: env.USE_SONARQUBE == 0
-        run: dotnet test --collect:"Code Coverage" --logger:"trx;LogFileName=${{ env.TEST_OUTPUT_PATH }}/TestResults.xml"
+        run: dotnet test --logger="trx;LogFileName=TestResults.trx" --results-directory="./TestResults" --collect="XPlat Code Coverage"
 
       - name: Publish
         run: dotnet publish --configuration Release --output ${{ env.OUTPUT_PATH }}
