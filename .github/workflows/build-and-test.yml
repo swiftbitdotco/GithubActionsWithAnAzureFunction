@@ -1,4 +1,4 @@
-name: netcoreapp3.1
+name: Build and Test
 
 # https://stackoverflow.com/questions/58871955/sonarcloud-code-coverage-remains-0-0-in-github-actions-build
 # todo:https://www.aaron-powell.com/posts/2020-01-10-deploying-azure-functions-with-github-actions/
@@ -81,7 +81,7 @@ jobs:
         run: |
           dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithAnAzureFunction" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="${{ env.TEST_OUTPUT_PATH }}\*\coverage.cobertura.xml" /d:sonar.cs.xunit.reportsPaths="${{ env.TEST_OUTPUT_PATH }}\*.trx"
           dotnet build --no-restore --configuration release
-          dotnet test --blame --no-restore --logger="trx;LogFileName=TestResults.trx" --results-directory="${{ env.TEST_OUTPUT_PATH }}" --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat="cobertura" /p:CoverletOutput=${{ env.TEST_OUTPUT_PATH }}/Coverage/
+          dotnet test --blame --no-restore --logger="trx;LogFileName=TestResults.trx" --results-directory="${{ env.TEST_OUTPUT_PATH }}" --collect="XPlat Code Coverage"
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       # --- ^^^ SonarQube Stuff ^^^ ---
