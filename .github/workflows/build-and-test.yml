@@ -81,7 +81,7 @@ jobs:
         run: |
           dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithAnAzureFunction" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="${{ env.TEST_OUTPUT_PATH }}\*\coverage.cobertura.xml" /d:sonar.cs.xunit.reportsPaths="${{ env.TEST_OUTPUT_PATH }}\*.trx"
           dotnet build --no-restore --configuration release
-          dotnet test --blame --no-restore --logger="trx;LogFileName=TestResults.trx" --results-directory="${{ env.TEST_OUTPUT_PATH }}" --collect="XPlat Code Coverage"
+          dotnet test --no-restore /p:CoverletOutputFormat=cobertura /p:Exclude="[*Test]*"
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       # --- ^^^ SonarQube Stuff ^^^ ---
