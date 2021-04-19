@@ -84,6 +84,12 @@ jobs:
           dotnet test --blame --no-restore --logger="trx;LogFileName=TestResults.trx" --results-directory="${{ env.TEST_OUTPUT_PATH }}" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="${{ env.TEST_OUTPUT_PATH }}\coverage.opencover.xml" /p:Exclude="*[Test*]"
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
+      - name: List TestResults dir
+        if: env.USE_SONARQUBE == 1
+        shell: bash
+        run: |
+          ls ${{ env.TEST_OUTPUT_PATH }}
+
       # --- ^^^ SonarQube Stuff ^^^ ---
 
       - name: Build
