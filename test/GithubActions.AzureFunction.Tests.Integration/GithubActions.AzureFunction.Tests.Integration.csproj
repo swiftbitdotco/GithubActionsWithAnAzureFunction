@@ -39,4 +39,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- Automatically  -->
+    <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.0.4" />
+  </ItemGroup>
 </Project>
