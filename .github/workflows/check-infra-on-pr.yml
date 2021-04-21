@@ -51,7 +51,7 @@ jobs:
 
       - name: Setup variables for Terraform Plan
         shell: bash
-        run: 'echo "${{ env.TERRAFORM_PROD_TFVARS }}" > terraform.${{ env.env_name }}.tfvars'
+        run: 'echo "${{ secrets.TERRAFORM_PROD_TFVARS }}" > terraform.${{ env.env_name }}.tfvars'
 
       - name: Terraform Plan
         run: terraform plan -no-color -var-file=terraform.${{ env.env_name }}.tfvars -out=out.plan
