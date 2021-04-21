@@ -52,7 +52,7 @@ jobs:
       - name: Setup variables for Terraform Plan
         shell: bash
         run: |
-          echo ${{ secrets.TERRAFORM_PROD_TFVARS }} > terraform.${{ env.env_name }}.tfvars
+          echo '${{ secrets.TERRAFORM_PROD_TFVARS }}' > terraform.${{ env.env_name }}.tfvars
           cat terraform.${{ env.env_name }}.tfvars
 
       - name: Terraform Plan
