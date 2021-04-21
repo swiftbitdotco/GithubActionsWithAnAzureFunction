@@ -12,14 +12,28 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: 'Checkout Github Action'
-      uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Setup Dotnet ${{ env.DOTNET_VERSION }}
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Setup Dotnet ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Build and Test Solution
-      run: dotnet test --configuration Release
+      - name: Clean
+        run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+
+      - name: Install azure-functions-core-tools
+        shell: bash
+        run: sudo npm i -g azure-functions-core-tools@3 --unsafe-perm true
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration release
+
+      - name: Test & collect Code Coverage
+        run: dotnet test --logger="trx;LogFileName=TestResults.trx" --results-directory="${{ env.TEST_OUTPUT_PATH }}" --collect="XPlat Code Coverage"
