@@ -12,6 +12,8 @@ jobs:
   terraform-plan:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
+    env:
+      env_name: DEV
     steps:
       # Checkout the code
       # Marketplace: https://github.com/marketplace/actions/checkout
