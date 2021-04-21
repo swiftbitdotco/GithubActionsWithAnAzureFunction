@@ -49,12 +49,6 @@ jobs:
       - name: Init Terraform
         run: terraform init --backend-config="key=${{ env.env_name }}.terraform.tfstate"
 
-      - name: Setup variables for Terraform Plan
-        shell: bash
-        run: |
-          echo '${{ secrets.TERRAFORM_PROD_TFVARS }}' > terraform.${{ env.env_name }}.tfvars
-          cat terraform.${{ env.env_name }}.tfvars
-
       - name: Terraform Plan
         run: terraform plan -no-color -var-file=terraform.${{ env.env_name }}.tfvars -out=out.plan
 
