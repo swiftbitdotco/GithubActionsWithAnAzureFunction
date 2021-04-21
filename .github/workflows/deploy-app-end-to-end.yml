@@ -7,10 +7,10 @@ env:
   ARTIFACT_NAME: function
   ARTIFACTS_PATH: ${{ github.workspace }}/.artifacts
 
-  TEST_OUTPUT_PATH: ${{ github.workspace }}/TestResults
   DOTNET_VERSION: 3.1.x
+  TEST_OUTPUT_PATH: ${{ github.workspace }}/TestResults
 
-  slot_name: staging
+  SLOT_NAME: staging
 
 on:
   workflow_dispatch: # manual trigger
@@ -99,7 +99,7 @@ jobs:
         uses: azure/functions-action@v1
         with:
           app-name: ${{ secrets.RESOURCE_FUNCTIONAPP_NAME_DEV }}
-          slot-name: ${{ env.slot_name }}
+          slot-name: ${{ env.SLOT_NAME }}
           package: published
           publish-profile: ${{ steps.publishprofile.outputs.profile }}
 
@@ -141,7 +141,7 @@ jobs:
 #       uses: azure/webapps-deploy@v2
 #       with:
 #         app-name: ${{ env.prod_web_app_name }}
-#         slot-name: ${{ env.slot_name }}
+#         slot-name: ${{ env.SLOT_NAME }}
 #         package: ${{ github.workspace }}/${{ env.ARTIFACT_NAME }}
 
 #     - name: Echo url from deployment
@@ -169,7 +169,7 @@ jobs:
 #     - name: Swap slots
 #       id: slot_swap
 #       run: |
-#         az functionapp deployment slot swap -g ${{ env.prod_web_app_rg_name }} -n ${{ env.prod_web_app_name }} -s ${{ env.slot_name }}
+#         az functionapp deployment slot swap -g ${{ env.prod_web_app_rg_name }} -n ${{ env.prod_web_app_name }} -s ${{ env.SLOT_NAME }}
 #         url=$(az functionapp show -g ${{ env.prod_web_app_rg_name }} -n ${{ env.prod_web_app_name }} --query "defaultHostName" -o tsv)
 #         echo "::set-output name=url::http://$url"
 
