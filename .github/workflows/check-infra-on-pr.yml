@@ -1,0 +1,69 @@
+name: "Infrastructure check on PR"
+
+# Trigger when a pull request is received
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "deploy/**"
+      - ".github/workflows/infra-end-to-end.yaml"
+
+jobs:
+  terraform-plan:
+    name: "Terraform Plan"
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code
+      # Marketplace: https://github.com/marketplace/actions/checkout
+      - name: "Setup - Checkout"
+        uses: actions/checkout@v2
+
+      # Static analysis of Terraform templates to spot potential security issues
+      # Marketplace: https://github.com/marketplace/actions/terraform-security-scan
+      - name: "Setup - Security Scan"
+        uses: triat/terraform-security-scan@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Setup Authentication for Terraform
+        uses: Azure/cli@v1
+        with:
+          inlineScript: |
+            echo "ARM_SUBSCRIPTION_ID=$(az account show --query="id" -o tsv)" >> $GITHUB_ENV
+            echo "ARM_CLIENT_ID=$(az account show --query="user.name" -o tsv)" >> $GITHUB_ENV
+            echo "ARM_CLIENT_SECRET=$(jq '.clientSecret' -r <<< '${{ secrets.AZURE_CREDENTIALS }}')" >> $GITHUB_ENV
+            echo "ARM_TENANT_ID=$(az account show --query="tenantId" -o tsv)" >> $GITHUB_ENV
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.tf_version }}
+
+      - name: Init Terraform
+        run: terraform init --backend-config="key=${{ env.env_name }}.terraform.tfstate"
+
+      - name: Terraform Plan
+        run: terraform plan -no-color -var-file=terraform.${{ env.env_name }}.tfvars -out=out.plan
+
+      # Submit a comment with the plan output to the pull request
+      - name: Terraform Comment
+        uses: actions/github-script@0.9.0
+        env:
+          STDOUT: "```${{ steps.plan.outputs.stdout }}```"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: process.env.STDOUT
+            })
+
+      - name: Azure logout
+        run: az logout

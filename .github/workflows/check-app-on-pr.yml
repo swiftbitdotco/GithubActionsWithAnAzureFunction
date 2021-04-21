@@ -1,0 +1,25 @@
+name: Build check on PR
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - "deploy/**"
+      - ".github/workflows/infra-end-to-end.yaml"
+env:
+  DOTNET_VERSION: 3.1.x
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@master
+
+    - name: Setup Dotnet ${{ env.DOTNET_VERSION }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Build and Test Solution
+      run: dotnet test --configuration Release
