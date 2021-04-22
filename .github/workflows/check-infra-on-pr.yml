@@ -56,10 +56,6 @@ jobs:
       - name: Init Terraform
         run: terraform init --backend-config="key=${{ env.env_name }}.terraform.tfstate"
 
-      - name: ls
-        shell: bash
-        run: ls
-
       - name: Terraform Plan
         run: terraform plan -no-color -var-file=terraform.${{ env.env_name }}.tfvars -out=out.plan
 
