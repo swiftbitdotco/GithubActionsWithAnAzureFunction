@@ -1,0 +1,180 @@
+name: Deploy application end to end
+
+# https://stackoverflow.com/questions/58871955/sonarcloud-code-coverage-remains-0-0-in-github-actions-build
+# todo:https://www.aaron-powell.com/posts/2020-01-10-deploying-azure-functions-with-github-actions/
+
+env:
+  ARTIFACT_NAME: function
+  ARTIFACTS_PATH: ${{ github.workspace }}/.artifacts
+
+  DOTNET_VERSION: 3.1.x
+  TEST_OUTPUT_PATH: ${{ github.workspace }}/TestResults
+
+  SLOT_NAME: staging
+
+on:
+  workflow_dispatch: # manual trigger
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "deploy/**"
+      - ".github/workflows/infra-end-to-end.yaml"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Dotnet ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Clean
+        run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+
+      - name: Install azure-functions-core-tools
+        shell: bash
+        run: sudo npm i -g azure-functions-core-tools@3 --unsafe-perm true
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration release
+
+      - name: Test & collect Code Coverage
+        run: dotnet test --logger="trx;LogFileName=TestResults.trx" --results-directory="${{ env.TEST_OUTPUT_PATH }}" --collect="XPlat Code Coverage"
+
+      - name: Publish
+        run: dotnet publish --configuration Release --output ${{ env.ARTIFACTS_PATH }}
+
+      - name: Publish artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACTS_PATH }}
+
+  #################################################################################################
+
+  dev_deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: DEV
+      url: ${{ steps.deploywebapp.outputs.webapp-url }}
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACTS_PATH }}
+
+      - name: "ls artifacts"
+        shell: bash
+        run: |
+          ls ${{ env.ARTIFACTS_PATH }}
+
+      - name: Login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get FunctionApp publish profile
+        id: publishprofile
+        uses: aliencube/publish-profile-actions@v1
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        with:
+          resourceGroupName: ${{ secrets.RESOURCE_GROUP_NAME_DEV }}
+          appName: ${{ secrets.RESOURCE_FUNCTIONAPP_NAME_DEV }}
+
+      - name: Deploy FunctionApp ${{ secrets.RESOURCE_FUNCTIONAPP_NAME_DEV }}
+        id: deployfunctionapp
+        uses: azure/functions-action@v1
+        with:
+          app-name: ${{ secrets.RESOURCE_FUNCTIONAPP_NAME_DEV }}
+          slot-name: ${{ env.SLOT_NAME }}
+          package: published
+          publish-profile: ${{ steps.publishprofile.outputs.profile }}
+
+      - name: Echo url from deployment
+        run: echo "Got [${{ steps.deployfunctionapp.outputs.app-url }}] from previous step"
+
+      - name: Reset FunctionApp publish profile
+        uses: aliencube/publish-profile-actions@v1
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        with:
+          resourceGroupName: ${{ secrets.RESOURCE_GROUP_NAME_DEV }}
+          appName: ${{ secrets.RESOURCE_FUNCTIONAPP_NAME_DEV }}
+          reset: true
+
+      - name: Azure logout
+        run: az logout
+#################################################################################################
+
+#   prod_deploy_canary:
+#     needs: dev_deploy
+#     runs-on: ubuntu-latest
+#     environment:
+#       name: PROD
+#       url: ${{ steps.deploywebapp.outputs.webapp-url }}
+#     steps:
+#     - name: Download site package
+#       uses: actions/download-artifact@v2
+#       with:
+#         name: ${{ env.ARTIFACT_NAME }}
+#         path: ${{ github.workspace }}/${{ env.ARTIFACT_NAME }}
+
+#     - uses: azure/login@v1
+#       with:
+#         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+#     - name: Deploy web app
+#       id: deployfunctionapp
+#       uses: azure/webapps-deploy@v2
+#       with:
+#         app-name: ${{ env.prod_web_app_name }}
+#         slot-name: ${{ env.SLOT_NAME }}
+#         package: ${{ github.workspace }}/${{ env.ARTIFACT_NAME }}
+
+#     - name: Echo url from deployment
+#       run: echo "Got [${{ steps.deployfunctionapp.outputs.functionapp-url }}] from previous step"
+
+#     - name: Azure logout
+#       run: az logout
+
+# #################################################################################################
+
+#   prod_deploy:
+#     needs: prod_deploy_canary
+#     runs-on: ubuntu-latest
+#     environment:
+#       name: PROD
+#       url: ${{ steps.slot_swap.outputs.url }}
+#     steps:
+#     - name: Echo url from previous stage
+#       run: echo "Got [${{ needs.dev_infra_apply.outputs.functionapp_url }}] from previous job"
+
+#     - uses: azure/login@v1
+#       with:
+#         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+#     - name: Swap slots
+#       id: slot_swap
+#       run: |
+#         az functionapp deployment slot swap -g ${{ env.prod_web_app_rg_name }} -n ${{ env.prod_web_app_name }} -s ${{ env.SLOT_NAME }}
+#         url=$(az functionapp show -g ${{ env.prod_web_app_rg_name }} -n ${{ env.prod_web_app_name }} --query "defaultHostName" -o tsv)
+#         echo "::set-output name=url::http://$url"
+
+#     - name: Echo url from swap
+#       run: echo "Got [${{ steps.slot_swap.outputs.url }}] from previous step"
+
+#     - name: Azure logout
+#       run: az logout

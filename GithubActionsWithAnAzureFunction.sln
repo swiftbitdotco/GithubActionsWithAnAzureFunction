@@ -16,13 +16,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{5CBC
 		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GithubActions.AzureFunction.Tests.Unit", "test\GithubActions.AzureFunction.Tests.Unit\GithubActions.AzureFunction.Tests.Unit.csproj", "{C3A4BE4E-9EC9-44DD-8EE7-1D992D2F9059}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GithubActions.AzureFunction.Tests.Unit", "test\GithubActions.AzureFunction.Tests.Unit\GithubActions.AzureFunction.Tests.Unit.csproj", "{C3A4BE4E-9EC9-44DD-8EE7-1D992D2F9059}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_root", "_root", "{E3EBAED6-8F50-43CD-9320-384F0CCBCBFD}"
 	ProjectSection(SolutionItems) = preProject
 		pre-push.sh = pre-push.sh
 		README.md = README.md
 		runtests.bat = runtests.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_terraform", "_terraform", "{4D2B6FD6-970C-4E6A-BC9A-514A03E7FE78}"
+	ProjectSection(SolutionItems) = preProject
+		_terraform\main.tf = _terraform\main.tf
+		_terraform\terraform.tfvars = _terraform\terraform.tfvars
+		_terraform\variables.tf = _terraform\variables.tf
 	EndProjectSection
 EndProject
 Global

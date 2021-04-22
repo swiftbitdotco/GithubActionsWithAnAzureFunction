@@ -1,0 +1,40 @@
+name: Build check on PR
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - "deploy/**"
+      - ".github/workflows/infra-end-to-end.yaml"
+env:
+  DOTNET_VERSION: 3.1.x
+  TEST_OUTPUT_PATH: ${{ github.workspace }}/TestResults
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Dotnet ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Clean
+        run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+
+      - name: Install azure-functions-core-tools
+        shell: bash
+        run: sudo npm i -g azure-functions-core-tools@3 --unsafe-perm true
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration release
+
+      - name: Test & collect Code Coverage
+        run: dotnet test --logger="trx;LogFileName=TestResults.trx" --results-directory="${{ env.TEST_OUTPUT_PATH }}" --collect="XPlat Code Coverage"
