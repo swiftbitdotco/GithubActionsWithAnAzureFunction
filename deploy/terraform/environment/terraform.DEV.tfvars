@@ -1,4 +1,4 @@
 environment="dev"
 location="UK South"
-tier="Dynamic"
-size="Y1"
+app_service_plan_sku_tier="Dynamic"
+app_service_plan_sku_size="Y1"

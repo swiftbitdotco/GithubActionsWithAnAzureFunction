@@ -22,8 +22,8 @@ resource "azurerm_storage_account" "storage_account" {
   name                     = "st${var.project}${var.environment}"
   resource_group_name      = azurerm_resource_group.resource_group.name
   location                 = var.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
+  account_tier             = var.storage_account_tier
+  account_replication_type = var.storage_account_replication_type
 }
 
 resource "azurerm_application_insights" "application_insights" {
@@ -40,8 +40,8 @@ resource "azurerm_app_service_plan" "app_service_plan" {
   kind                = "FunctionApp"
   reserved            = true # this has to be set to true for Linux. Not related to the Premium Plan
   sku {
-    tier = var.tier
-    size = var.size
+    tier = var.app_service_plan_sku_tier
+    size = var.app_service_plan_sku_size
   }
 }
 
