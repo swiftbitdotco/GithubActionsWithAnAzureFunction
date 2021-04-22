@@ -57,6 +57,7 @@ jobs:
         run: terraform init --backend-config="key=${{ env.env_name }}.terraform.tfstate"
 
       - name: Terraform Plan
+        id: plan
         run: terraform plan -no-color -var-file=terraform.${{ env.env_name }}.tfvars -out=out.plan
 
       # Submit a comment with the plan output to the pull request
