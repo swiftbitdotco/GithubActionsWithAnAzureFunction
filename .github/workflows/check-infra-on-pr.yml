@@ -3,10 +3,14 @@ name: "Infrastructure check on PR"
 # Trigger when a pull request is received
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
       - "deploy/**"
       - ".github/workflows/infra-end-to-end.yaml"
+
+env:
+  tf_version: 0.14.3
+  tf_dir: deploy/terraform/environment
 
 jobs:
   terraform-plan:
@@ -14,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       env_name: DEV
+    defaults:
+      run:
+        working-directory: ${{ env.tf_dir }}
     steps:
       # Checkout the code
       # Marketplace: https://github.com/marketplace/actions/checkout
