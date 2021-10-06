@@ -13,7 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GithubActions.AzureFunction
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{5CBCA4D9-FA9A-4C2F-9A88-FAD969332317}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
+		.github\workflows\check-app-on-pr.yml = .github\workflows\check-app-on-pr.yml
+		.github\workflows\check-infra-on-pr.yml = .github\workflows\check-infra-on-pr.yml
+		.github\workflows\deploy-app-end-to-end.yml = .github\workflows\deploy-app-end-to-end.yml
+		.github\workflows\deploy-infra-end-to-end.yml = .github\workflows\deploy-infra-end-to-end.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GithubActions.AzureFunction.Tests.Unit", "test\GithubActions.AzureFunction.Tests.Unit\GithubActions.AzureFunction.Tests.Unit.csproj", "{C3A4BE4E-9EC9-44DD-8EE7-1D992D2F9059}"
@@ -31,6 +34,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_terraform", "_terraform", 
 		_terraform\terraform.tfvars = _terraform\terraform.tfvars
 		_terraform\variables.tf = _terraform\variables.tf
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{8BBE3FAB-640B-45E4-A99C-8AB1769AC639}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GithubActions.Pulumi", "infra\GithubActions.Pulumi\GithubActions.Pulumi.csproj", "{B1DFE5E6-8C68-42CF-A64E-FBD7F28E4134}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +57,10 @@ Global
 		{C3A4BE4E-9EC9-44DD-8EE7-1D992D2F9059}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3A4BE4E-9EC9-44DD-8EE7-1D992D2F9059}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3A4BE4E-9EC9-44DD-8EE7-1D992D2F9059}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1DFE5E6-8C68-42CF-A64E-FBD7F28E4134}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1DFE5E6-8C68-42CF-A64E-FBD7F28E4134}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1DFE5E6-8C68-42CF-A64E-FBD7F28E4134}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1DFE5E6-8C68-42CF-A64E-FBD7F28E4134}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,6 +69,7 @@ Global
 		{7446A89E-67EC-4794-A842-D4092D908158} = {8D4C42FE-549E-4D12-93E3-C1F231621410}
 		{F3C2230E-9BE1-4728-B51B-7097A501E40E} = {96488591-BE66-4C8D-92FD-7935B80B9999}
 		{C3A4BE4E-9EC9-44DD-8EE7-1D992D2F9059} = {96488591-BE66-4C8D-92FD-7935B80B9999}
+		{B1DFE5E6-8C68-42CF-A64E-FBD7F28E4134} = {8BBE3FAB-640B-45E4-A99C-8AB1769AC639}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D6A570D8-177E-47A5-A8E2-FA5187F47E55}

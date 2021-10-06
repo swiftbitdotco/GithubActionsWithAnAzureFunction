@@ -1,0 +1,4 @@
+config:
+  GithubActionsWithAnAzureFunction:functionSku: Dynamic/Y1
+  GithubActionsWithAnAzureFunction:azureRegion: EastUS  
+  azure-native:location: EastUS
