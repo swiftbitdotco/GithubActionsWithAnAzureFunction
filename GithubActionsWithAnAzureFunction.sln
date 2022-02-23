@@ -28,13 +28,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_root", "_root", "{E3EBAED6
 		runtests.bat = runtests.bat
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_terraform", "_terraform", "{4D2B6FD6-970C-4E6A-BC9A-514A03E7FE78}"
-	ProjectSection(SolutionItems) = preProject
-		_terraform\main.tf = _terraform\main.tf
-		_terraform\terraform.tfvars = _terraform\terraform.tfvars
-		_terraform\variables.tf = _terraform\variables.tf
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{8BBE3FAB-640B-45E4-A99C-8AB1769AC639}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GithubActions.Pulumi", "infra\GithubActions.Pulumi\GithubActions.Pulumi.csproj", "{B1DFE5E6-8C68-42CF-A64E-FBD7F28E4134}"
