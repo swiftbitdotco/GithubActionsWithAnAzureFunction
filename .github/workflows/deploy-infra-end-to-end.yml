@@ -91,7 +91,7 @@ jobs:
             echo "ARM_TENANT_ID=$(az account show --query="tenantId" -o tsv)" >> $GITHUB_ENV
 
       - name: Download plan
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ env.env_name }}-tf-plan
           path: ${{ github.workspace }}/${{ env.tf_dir }}
@@ -195,7 +195,7 @@ jobs:
             echo "ARM_TENANT_ID=$(az account show --query="tenantId" -o tsv)" >> $GITHUB_ENV
 
       - name: Download plan
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ env.env_name }}-tf-plan
           path: ${{ github.workspace }}/${{ env.tf_dir }}
